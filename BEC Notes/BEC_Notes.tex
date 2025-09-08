@@ -1,0 +1,447 @@
+
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{fancyhdr}
+\usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage{braket}
+\usepackage{mhchem}
+\usepackage{chemfig}
+\usepackage{gensymb}
+\newcommand{\ve}{\mathbf}
+\newcommand{\pa}{\partial}
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+
+\title{Bose-Einstein Condensates Notes}
+\author{Lachlan Kan}
+\date{March 2025}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Bose-Einstein Condensates are a bosonic state of matter in which the temperature is so low, 
+all the constituent particles (bosons) collapse into a single quantum state. Hence the whole 
+collection of particles can be described by a single wavefunction $\psi$. This wavefunction can be 
+found by solving the following nonlinear Schrodinger Equation, known as the "Gross-Pitaevskii Equation".
+\begin{align}
+    -\frac{\hbar^2}{2m}\nabla^2\psi+U\psi+\gamma|\psi|^2\psi=i\hbar\pdv{\psi}{t}
+\end{align}
+Where $U=U(\ve{r})$ is the potential and $\gamma\in\mathbb{R}$ is the 
+nonlinear interaction amplitude ($\gamma<0$ indicates an attractive force and $\gamma>0$ indicates a repulsive force). 
+We shall work in natural units where $\hbar=c=1$, and for now, restrict our view to the one dimensional case. 
+Equation (1) becomes 
+\begin{align}
+    -\frac{1}{2m}\pdv[2]{\psi}{x}+(U+\gamma|\psi|^2)\psi=i\pdv{\psi}{t}
+\end{align}
+Solving the equation is difficult, so we look for a way to 
+treat the linear and nonlinear parts separately and combine it at the end (we hope for the best that 
+the combination at the end will be a good approximation).
+We shall define the dispersion and nonlinear operators $\hat{D}$ and $\hat{N}$ respectively as follows
+\begin{align}
+    \hat{D} &\equiv -\frac{1}{2m}\pdv[2]{}{x}\\ 
+    \hat{N} &\equiv U+\gamma|\psi|^2
+\end{align}
+Hence, equation (2) now reads 
+\begin{align}
+    \pdv{\psi}{t}=-i(\hat{D}+\hat{N})\psi
+\end{align}
+Thus, the wavefunction $\psi=\psi(x,t)$ can be solved for analogously as an ordinary differential 
+equation in $t$ 
+\begin{align}
+    \psi=\exp(-i[\hat{D}+\hat{N}]t)\psi(x,0)
+\end{align}
+We are interested in propagating this wavefunction through time, i.e. 
+seeing what happens to our quantum state throughout time. 
+Taking a small step $dt$ in time 
+(Computationally in Python we can define $dt\sim 10^{-3}$, so here we will just treat it as a number), we find that 
+\begin{align}
+    \psi(x,t+dt)&\approx\exp(-i[\hat{D}+\hat{N}](t+dt))\psi(x,0)\\
+    &=\exp(-i[\hat{N}+\hat{D}]t)\exp(-i[\hat{N}+\hat{D}]dt)\psi(x,0)\\ 
+    &=\exp(-i\hat{N}dt)\exp(-i\hat{D}dt)\psi(x,t)
+\end{align}
+Where in (8), I swapped the order of $\hat{N}$ and $\hat{D}$ for convenience and clarity.
+Notice that these exponentials are operators that can act on any wavefunction. 
+Now our job is to find both of those exponentials. The factor of $\exp(-i\hat{N}dt)$
+can be found easily. Since we start with some arbitrary $\psi$  (say, a Gaussian wave packet) 
+and some arbitrary potential (say, a harmonic oscillator potential) that we know, 
+we can simply compute $\hat{N}$ and substituting it into the exponential. The hard part comes with 
+computing the factor of $\exp(-i\hat{D}dt)$, which contains $\partial^2/\partial x$ - not 
+so easy to compute. To make the task easier, we can consider taking a 
+Fourier transform, since in the 
+frequency (i.e. wavenumber $k$, since we are concerned with the $spatial$ 
+Fourier transform)
+domain, derivatives become multiplication. Let us take the Fourier transform of 
+the operator
+$\partial/\partial x$.
+\begin{align}
+    \mathcal{F}(\pdv{{\psi}}{x})&=\int_{-\infty}^{\infty}\pdv{\psi}{x}\exp(-ikx)\ dx\\ 
+    &=\exp(-ikx)\psi \bigg|_{-\infty}^{\infty}-\int_{-\infty}^{\infty} (-ik)\ {\exp(-ikx)}\psi\ dx\\ 
+    &=ik\int_{-\infty}^{\infty}\exp(-ikx)\psi\ dx\\
+    &=ik\tilde{\psi}
+\end{align}  
+We notice that in (11), the boundary term vanishes. We also notice that the integral in (12) is 
+just the Fourier transform of $\psi$, which we denote by $\tilde{\psi}$. 
+Applying the derivative operator in the $k$-domain twice, we find that  
+\begin{align}
+    \mathcal{F}(\pdv[2]{{\psi}}{x})=-k^2\tilde{\psi}
+\end{align}
+Therefore, we see that 
+\begin{align}
+    \mathcal{F}(\hat{D})=\frac{1}{2m}k^2
+\end{align}
+With the Fourier transform of the operator, 
+we can now find the Fourier transform of the exponential factor. Since the operator $\hat{D}$ is 
+a differential operator diagonalised by the Fourier transform, we can write
+\begin{align}
+    \mathcal{F}[\exp(-i\hat{D}dt)]=\exp(-idt\frac{k^2}{2m})
+\end{align}
+Now we have transformed a second derivative problem (which would require us to compute 
+second differences, making things harder) into a multiplication operation - much simpler. 
+Now all that is left is to take the Fourier transform of the remaining factors, 
+and then inverse 
+Fourier transform the whole thing. Here we apply the nonlinear exponential (it is an operator) to 
+$\psi$ in position space first. Then we apply the dispersion exponential (it is also an operator) in 
+$k$ space, since the second derivative becomes simple multiplication there. 
+\begin{align}
+    \mathcal{F}[\psi(x,t+dt)]=\exp(-idt\frac{k^2}{2m})\mathcal{F}[\exp(-i(U+\gamma|\psi|^2)dt)\psi]
+\end{align}
+To recover the equation in position space, we inverse Fourier transform the above, which gives us 
+\begin{align}
+    \psi(x,t+dt)=\mathcal{F}^{-1}(\exp(-idt\frac{k^2}{2m})\mathcal{F}[\exp(-i(U+\gamma|\psi|^2)dt)\psi])
+\end{align}
+This is known as the Lie-Trotter Split Step method, which has error $\sim \mathcal{O}(dt)$ - not bad for our approximation. A more accurate method can be obtained if we 
+rewrite equation (9) such that 
+\begin{align}
+    \psi(x,t+dt)&=\exp(-i\hat{N}dt/2)\exp(-i\hat{D}dt)\exp(-i\hat{N}dt/2)\psi(x,t)
+\end{align} 
+And repeat the above process, this time keeping one of the $\exp(-i\hat{N}dt/2)$ outside of 
+the main Fourier / inverse Fourier transform sequence. Thus, we obtain the following 
+\begin{align}
+    \psi(x,t+dt)=\exp(-i(U+\gamma|\psi|^2)dt/2)\mathcal{F}^{-1}(\exp(-idt\frac{k^2}{2m})\mathcal{F}[\exp(-i(U+\gamma|\psi|^2)dt/2)\psi])    
+\end{align}
+Or, written more compactly in terms of our defined operators, 
+\begin{align}
+    \psi(x,t+dt)=\exp(-i\hat{N}dt/2)\mathcal{F}^{-1}(\exp(-idt\frac{k^2}{2m})\mathcal{F}[\exp(-i\hat{N}dt/2)\psi])
+\end{align}
+This is known as Strang Splitting, which is more accurate, with error $\sim \mathcal{O}(dt^2)$ - a whole 
+order of magnitude more accurate. To implement this computationally, we first 
+apply the nonlinear exponential 
+to $\psi$ (This updates $\psi$), and Fourier transform it (This transforms the new $\psi$ to $k$ space).  While in $k$-space, we apply the F.T.
+of the dispersion exponential to it (updating $\psi$ again). We then apply the inverse F.T.
+to get back into position space (updating $\psi$ again), and
+ finally apply the nonlinear exponential to the whole thing (finally updating $\psi$ to the next timestep). 
+Since $\hat{N}$ depends on $\psi$, we can use the version of $\psi$ 
+that were updated by the previous operators in calculating the second nonlinear exponential.
+\newpage
+\section{Generalisation to Higher Dimensions}
+We can deal with (1) directly to obtain numerical solutions to the GPE in higher dimensions. 
+We now define 
+\begin{align}
+    \hat{D}&\equiv -\frac{1}{2m}\nabla^2\\ 
+    \hat{N}&\equiv U+\gamma|\psi|^2
+\end{align}
+and repeat the process above. We define the position vector 
+$\ve{r}=r_n$ and its associated bases $\ve{e}_n$. We can now get the Fourier
+ transform of the $\nabla$ operator to transform it into $k$-space, 
+ goverened by the wave vector $\ve{k}=k_n$.
+\begin{align}
+    \mathcal{F}(\nabla\psi) &= \int_{\mathbb{R}^n}\nabla\psi\exp(-i\ve{k}\cdot \ve{r})\ d\ve{r}\\ 
+    &=\int_{\mathbb{R}^n}\sum_n\pdv{\psi}{r_n} \ve{e}_n\ \exp(-i\ve{k}\cdot \ve{r})\ d\ve{r}\\ 
+    &= \sum_n\ve{e}_n \int_{\mathbb{R}^n}\pdv{\psi}{r_n}\exp(-i\ve{k}\cdot \ve{r})\ d\ve{r}\\
+    &=\sum_n\ve{e}_n\mathcal{F}(\pdv{\psi}{r_n})
+\end{align}
+Where in (26), the sum and integral swap is allowed since
+all normalisation conditions in quantum mechanics 
+dictate that $\psi\to0$ at infinity for all valid wavefunctions. To get from equation (26) to (27), we simply recognise that 
+the integral is the definition of the Fourier transform in each dimension.
+ Now for each dimension, 
+we can repeat the proof presented in equations (10) to (13), and evaluate the sum given in (27), resulting in 
+\begin{align}
+    \mathcal{F}(\nabla\psi)=-\sum_n\ve{e}_nik_n\tilde{\psi}=-i\ve{k}\tilde{\psi}
+\end{align}
+Now we apply the operator twice to obtain the fourier transform of the Laplacian, 
+\begin{align}
+    \mathcal{F}(\nabla^2\psi)=-k^2\tilde{\psi}
+\end{align}
+Where $k^2$ denotes the squared amplitude of the wavevector. And thus we obtain the Fourier transform 
+of the dispersion operator, given by 
+\begin{align}
+    \mathcal{F}(\hat{D})=\frac{1}{2m}k^2
+\end{align}
+Where again, $k^2$ is the squared amplitude of the wave vector (replacing the square of the wavenumber that was in eqaution 
+(15) last part). We can then repeat the Strang Splitting process to obtain an approximate numerical solution to the 
+GPE. Note that when using the .fft and .fft2 methods in numPy, periodic boundary 
+conditions are automatically applied (resulting in $\psi$ being able to interact with itself by going 
+past $L$ and emerging back out at $-L$, where $r_n=L$ is the simulation boundary). 
+To counteract unphysical self interactions, it must be satisfied that $\psi\to0$ 
+near the boundaries, minimising the unwanted effects. 
+\newpage
+\section{Interpretation and Validity}
+To interpret the results
+and assess the region of validity,
+ we must first understand where the Gross-Pitaevskii equation comes from. Consider a gas of bosons that interact 
+ only upon contact. The Hamiltonian of such a system is given by 
+\begin{align}
+    \hat{H}=\sum_n(-\frac{1}{2m}\nabla^2+U)+\gamma\sum_{i<j}\delta(r_i-r_j)
+\end{align}
+Which is simply the sum of the Hamiltonians for all the bosons plus an interaction term that becomes 
+nonzero only if the positions of two bosons are equal (i.e. they touch). If the temperature is low enough that 
+the bosons have a low enough energy such that $\lambda>>a$ (where $a$ is the scattering length of the bosons), 
+then the interaction term can be treated as the interaction between waves instead of contact 
+scattering for particles. Applying the variational principle to this result gives equation (1), which computes 
+$\psi$ - the overall macroscopic evolution of the Bose-Einstein condensate.
+ This origin for the equation is important, as it leads us to the 
+following interpretations.
+\subsection{Normalisation}
+Due to the macroscopic nature of the wavefunction $\psi$, it does not make sense to define the integral of 
+the square magnitude to be the probability (probability applies to where one particle is, not the macroscopic 
+behaviour of whole puddles of fluids). One way to interpret the quantity $|\psi|^2$ is then the density of the condensate. While the notion of "probability of position" is 
+nonsensical for a fluid, the notion of a density is clear and well defined. Hence, it is useful to 
+think of $|\psi|^2$ as the condensate density (i.e. number density of bosons).
+This interpretation leads us to the normalisation condition that 
+\begin{align}
+    \int_{\mathbb{R}^3}|\psi|^2\ dV = N
+\end{align}
+Where $N$ is the number of bosons. This is trivial from the definition of density $|\psi|^2\equiv\rho=dN/dV$
+if we define the square amplitude as the condensate density as mentioned above.
+\subsection{Temperature}
+Since the Gross-Pitaevskii equation emerges from the low energy limit $\lambda>>a$,
+ it is no surprise that 
+the region that the GPE is valid is precisely when $T\to0$ in Kelvins. 
+The specific temperature is given in Gross and Pitaevskii's papers in 1963 and 1961 respectively as 
+$T\approx3.31\ \hbar^2n^{2/3}/mk_B$ where $m$ is the mass of each boson.
+\subsection{Potential and Experimental Setup}
+So far we have dealt with an arbitrary potential $U$. Now, we must find one such potential 
+what we can implement and test in a real experiment.  
+In a real lab, the helium-4 atoms used to make BSEs are trapped in a laser beam. For simplicity, 
+let us assume that each the helium-4 atom behaves like an ideal dipole, made up of two charge centers each with charge
+ $\pm q=\pm2e$ with positions $\ve{r}_+$ and $\ve{r}_-$ respectively,  spaced some infinitessimal distance $\ve{r}_+-\ve{r}_-=\boldsymbol{\epsilon}$ apart. Suppose the laser is composed of 
+crossed fields $\ve{E}$ and $\ve{B}$, of which the power is constant in time 
+(the frequency of the laser far exceeds the timescales of anything else, hence we can take the average of all oscillatory behaviour of the laser and treat it as constant). We can write out 
+the sum of forces using the Lorentz force law 
+\begin{align}
+    \ve{F}&=q(\ve{E}(\ve{r}_+)+\dv{\ve{r_+}}{t}\cross\ve{B})-q(\ve{E}(\ve{r}_-)+\dv{\ve{r_-}}{t}\cross\ve{B})\\ 
+    &=q(\ve{E}(\ve{r}_+)-\ve{E}(\ve{r}_-)+\dv{(\ve{r}_+-\ve{r_-})}{t}\cross\ve{B})\\ 
+    &\equiv q(\ve{E}(\ve{r}_+)-\ve{E}(\ve{r}_-)+\dv{\boldsymbol{\epsilon}}{t}\cross\ve{B}) 
+\end{align}
+Where in the last step, we simplified the displacement by definition of $\boldsymbol{\epsilon}$, the 
+separation vector. Since $\ve{r}_+$ and $\ve{r}_-$ are so close together,
+ we can expand $\ve{E}(\ve{r}_-)$ in a Taylor series around $\ve{r}_+$ to obtain a first order
+  approximation. 
+\begin{align}
+    \ve{E}(\ve{r}_-)&\approx\ve{E}(\ve{r}_+)+[(\ve{r}_--\ve{r}_+)\cdot\nabla]\ve{E}
+\end{align}
+Notice that $\nabla\ve{E}$ is a tensor with components $\pa_{r_i}E_j$ 
+(Applying the gradient operator to a vector field yields a higher order tensor). The series is truncated after the first order term. This shouldn't cause any significant loss of 
+accuracy since $\epsilon$ is infinitessimal. Now (35) becomes 
+\begin{align}
+    \ve{F}&\approx q(\ve{E}(\ve{r}_+)-\ve{E}(\ve{r}_+)-[(\ve{r}_--\ve{r}_+)\cdot\nabla]\ve{E}+\dv{\boldsymbol{\epsilon}}{t}\cross\ve{B}) \\ 
+    &= q[(\boldsymbol{\epsilon}\cdot\nabla)\ve{E}+\dv{\boldsymbol{\epsilon}}{t}\cross\ve{B}]\\ 
+    &=(\ve{p}\cdot\nabla)\ve{E}+\dv{\ve{p}}{t}\cross\ve{B}
+\end{align}
+Where in (39) we used the identity that the polarisation $\ve{p}\equiv q\boldsymbol{\epsilon}$.  We now use 
+another property of the polarisation that $\ve{p}=\alpha\ve{E}$ to obtain the following. 
+\begin{align}
+    \ve{F}=\alpha[(\ve{E}\cdot\nabla)\ve{E}+\dv{\ve{E}}{t}\cross\ve{B}]
+\end{align}
+We can apply the vector identity $(\ve{A}\cdot\nabla)\cross\ve{A}\equiv\nabla(A^2/2)-\ve{A}\cross(\nabla\cross\ve{A})$ to the above and 
+obtain the following simplification
+\begin{align}
+    \ve{F}&= \alpha[\frac{1}{2}\nabla(E^2)-\ve{E}\cross(\nabla\cross\ve{E})+\dv{\ve{E}}{t}\cross\ve{B}]
+\end{align}
+Now we can apply Faraday's law, which states that $\nabla\cross\ve{E}=-\pa\ve{B}/\pa t$ to rewrite (41) into a more convienient form.
+\begin{align}
+    \ve{F}&=\alpha[\frac{1}{2}\nabla(E^2)-\ve{E}\cross(-\pdv{\ve{B}}{t})+\dv{\ve{E}}{t}\cross\ve{B}]\\ 
+    &= \alpha[\frac{1}{2}\nabla E^2+\pdv{(\ve{E}\cross \ve{B})}{t}]
+\end{align}
+Notice that the two negative signs in the second term of (42) cancels out, leaving us with a positive product between the electric field and 
+the time derivative of the magnetic field. We see that this, coupled with the last term of the same equation, forms the product rule for the time derivative of 
+$\ve{E}\cross\ve{B}$. Since the power of the laser is constant, the Poynting vector $\ve{S}$ (which defines the power) must be 
+constant as well. We know that (in natural units where $\hbar=\epsilon_0=\mu_0=c\equiv1$) $\ve{S}\equiv\ve{E}\cross\ve{B}\implies \pa\ve{S}/\pa\ve{t}=\pa(\ve{E}\cross\ve{B})/\pa\ve{t}$.
+Hence if the Poynting vector were to be constant, 
+the time derivative must reduce to 0. This leaves us with the expression 
+\begin{align}
+    \ve{F}=\frac{1}{2}\alpha\nabla E^2
+\end{align}
+Which is the force felt by a single helium-4 atom in our laser trap. We can further analyse this expression 
+if we treat the helium-4 as a spherical dipole. The dipole moment of such a dipole under some electric field $\ve{E}$ is given by 
+\begin{align}
+    \ve{p}&=4\pi n_1^2a^3\frac{m^2-1}{m^2+2}\ve{E}\equiv\alpha\ve{E}\\ 
+    \implies\alpha&\equiv4\pi n_1^2a^3\frac{m^2-1}{m^2+2}
+\end{align}
+Where $n_0$ and $n_1$ are the refractive indices of air and the helium-4 respectively, $a$ is the radius of a helium-4 atom,
+ and $m\equiv n_0/n_1$. 
+We also know that the intensity of the electric field is its magnitude, in other words,  $I=E^2$. Hence, (44) becomes 
+\begin{align}
+    \ve{F}=2\pi n_1^2a^3\frac{m^2-1}{m^2+2}\nabla I=\beta\nabla I
+\end{align}
+Where we have defined the parameter $\beta\equiv  2\pi n_1^2a^3 (m^2-1)/(m^2+2)$ to clean up the expression. 
+In a laser, the intensity naturally follows a radially symmetric Gaussian, with most of the intensity concentrated
+near the center. It follows that the intensity has the following form $I=A\exp(-\kappa r^2)$. 
+Here we will take $A=1$ for simplicity. We can thus say that 
+\begin{align}
+    |\nabla I|=\pdv{I}{r}=-2\kappa r\exp(-\kappa r^2)
+\end{align}
+Since the system is radially symmetric, we can omit the vector notation and just analyse the radial part as a scalar. We obtain the following expression for the force. 
+\begin{align}
+    F=-2\beta\kappa r\exp(-\kappa r^2)
+\end{align}
+Notice that the force is decreasing and almost linear near the origin. This is the telltale sign that a Hookean approximation is valid. 
+Let us find the "spring constant" of this optical trap by finding the first order Taylor series. 
+\begin{align}
+    F\approx -2\beta\kappa\exp(-2\kappa r_0^2)(1-2\beta r_0^2)(r-r_0)\bigg|_{r_0=0}=-2\beta\kappa r
+\end{align}
+Hence the "effective spring potential" $k$ is found as $k=2\beta\kappa$. Now, using the relation $\omega_0=\sqrt{k/m}$,
+we can find the natural angular frequency of the oscillator. 
+\begin{align}
+    \omega_0=\sqrt{\frac{2\beta\kappa}{m}}
+\end{align}
+We can then construct our potential $U=m\omega_0r^2/2$ using these parameters. 
+Thus, under optical trapping methods used to create BECs, the 
+potential has to be that of a harmonic oscillator. This means that the BEC is attracted to 
+the laser's center - thus confining (or "trapping") them to the desired region of space. 
+
+\section{Vortices}
+ One phenomenon of interest is the forming of vortices in BECs. Let us zoom in onto one small 
+part of the whole BEC sample.A vortex can be made by 
+imposing a rotating phase onto some density profile. Every point on the vortex is assigned a
+single 
+phase $S$. To ensure continuity, the phase difference after traversing a cycle across a closed contour must be an integer
+ multiple of $2\pi$. This can be expressed by the following contour integral
+ \begin{align}
+    \oint_C\nabla{S}\cdot\ d\ve{l}=2\pi q
+ \end{align}
+ where $q\in\mathbb{Z}$ is the "charge" of the vortex. 
+The velocity $\ve{v}$ is given by the well known $\ve{v}=\hbar\nabla S/m$. We can thus find the circulation $\Gamma$ of the vortex, 
+given by 
+\begin{align}
+    \Gamma=\oint_C \ve{v}\cdot d\ve{l}= \frac{\hbar}{m}\oint_C\nabla S\cdot\ d\ve{l}=\frac{\hbar}{m}2\pi q=\frac{h}{m}q
+\end{align}
+Which is the quantisation condition for circulation for quantum vortices. Let us analyse the wavefunction. In 2D polar coordinates 
+specified by $(r,\phi)$, a vortex can be generated as follows 
+\begin{align}
+    \psi(r,\phi)=f(r)\exp(i\ell\phi)
+\end{align}
+Where $\ell\in\mathbb{N}$ is the angular momentum quantum number of the system, and the phase 
+$S$ is given by $S=\ell\phi$. The function 
+$f(r)$ is a function defined by $|f(r)|^2\equiv{n_r(r)}$, where $n_r$ is the (radial)
+ density profile of the vortex.  Since 
+the density of any vortex is 0 at its core, it follows that $f(x)$ must vanish at $r=0$.
+The function is determined by minimising the energy of $\psi$, and is usually found numerically. Let us define a 
+variable $x\equiv r/\ell\xi$ where $\xi$ is the healing length of the vortex. A common approximation for 
+$f(r)$ (Now $ f(x)$ under the change of variables) is given by 
+\begin{align}
+    f(x)\approx\frac{\sqrt{n_0}x}{\sqrt{2+x^2}}
+\end{align}
+Where $n_0$ is the density of the vortex far from the origin. Notice that $f(0)=0$, 
+which matches our condition. 
+We also require that $\lim_{x\to\infty}|f(x)|^2=n_0$, since if we zoom out from our "one small part",  we should 
+expect to recover the regular density.  Notice that the function is 
+approximately linear near the origin. Therefore, for more computational simplicity or studies 
+interested in near-origin behaviour,
+ the following first order Taylor
+approximation can be used. 
+\begin{align}
+    f(x)\sim \sqrt{\frac{n_0}{2}}x
+\end{align}
+If we wish to study the macroscopic behaviour of the vortex, we must require that the wavefunction 
+be normalisable, and hence the density (and by definition $f$) must fall to 0 at large distances. I propose that we append to 
+the profile $f(x)$ an exponential term $A\exp(-\eta x)$, where $A$ is chosen such that the normalisation condition in (32) holds
+and $\eta$ is proportional to the healing length. Hence, (55) becomes the following under our macroscopic correction 
+\begin{align}
+    f(x)=\frac{A\sqrt{n_0}x}{\sqrt{2+x^2}}\exp(-x/\eta)
+\end{align}
+Since $\exp(-\eta x)\approx 1$ in the near origin Taylor approximation, we can recover (56) easily by focusing 
+on the local case. Hence this models, with accuracy, the vortex behaviour near the origin and satisfies the normalisation 
+conditions far away from it. 
+\subsection{Healing Length}
+We know that far away from the vortex core (in the standard, microscopic model), the wavefunction 
+will "recover" to the square root of the regular density $n_0$. Mathematically,
+ this happens at infinity. But physically, there 
+exists a certain length $\xi$ away from the vortex core where the density starts to
+approximately equal the regular density. Such a length is known as the "healing length".
+$\\\\$
+\noindent Let us consider the case when the kinetic energy is much greater than the nonlinear term. In that case, the GPE reduces to 
+\begin{align}
+    -\frac{1}{2m}\pdv[2]{\psi}{x}+U\psi=i\psi
+\end{align}
+Which is just the regular time dependent Schrodinger equation. We know that the wavefunctions 
+that are solutions of of this equation tends to disperse away from the origin. In BECs, the dispersion effects 
+are limited because there exists the nonlinear term $\gamma|\psi|^2\psi$ which acts as an attractive or 
+repulsive force between atoms to help the overall codnensate hold its shape. 
+$\\\\$
+\noindent Near the origin, the speed of the vortex is very high. Here, the kinetic energy dominates over the nonlinear term. 
+However, as we move away from the origin, the vortex speed decreases, and so does the kinetic energy. We then 
+argue that there exists a point where the kinetic energy no longer dominates, and the dispersion and attractive/repulsive effects 
+roughly equal to each other. In other words, at such a point with (comparatively) low kinetic energy,
+ the wavefunction no longer 
+evolves rapidly, and hence must settle to a stable, constant quantity, which we have determined previously to be related to the density by $\psi\sim\sqrt{n_0}$.
+We can thus write down the following 
+\begin{align}
+    \frac{1}{2m}\pdv[2]{\psi}{x}\approx\gamma|\psi|^2\psi
+\end{align}
+We can then approximate the healing length via dimensional analysis. We know $|\psi|^2\approx n_0\implies\psi\approx\sqrt{n_0}$
+when $x\approx\xi$ away from the origin. Therefore, we also know that 
+$\partial^2\psi/\partial x^2\sim\sqrt{n_0}/\xi^2$ (only the $x$ is squared in the second derivative, there is no square on the $\psi$). Putting 
+everything together, we have
+\begin{align}
+    \frac{1}{2m}\frac{\sqrt{n_0}}{\xi^2}\approx\gamma n_0\sqrt{n_0}\implies\xi\approx\frac{1}{\sqrt{2mn_0\gamma}}
+\end{align}
+Which is a standard estimation for the healing length of the Bose-Einstein Condensate. 
+\section{Finding Realistic Initial Conditions}
+So far, we've been considering arbitrary ansatz initial conditions and 
+putting them into the GPE to obtain the time evolution. These initial conditions 
+may not always be realistic, and are only approximate. 
+Realistically, BECs will 
+be stationary (meaning $|\psi|^2$ does not change with time) until 
+we do something to it (ex. swirl it to make a vortex, change the laser confinement frequency, etc.). Hence, 
+to obtain realistic initial conditions, we must first find a stationary state
+and then add a perturbation (the "do something") to the it. Now we must find the ground state.
+$\\\\$
+\noindent We know that for any stationary
+ quantum system at time $t=0$, the state vector can be expressed as  \begin{align}
+    \ket{\psi(0)}=\sum_n\psi_n(0)\ket{E_n}
+\end{align}
+Where $\psi_n(0)$ are the coefficients of the state at that point in time. 
+If the states are stationary, 
+we can apply the time evolution operator to (61) to
+ propagate the system through time. 
+\begin{align}
+    \ket{\psi}=\hat{U}\ket{\psi(0)}=\sum_n\exp(-iE_nt)\psi_n(0)\ket{E_n}
+\end{align}
+Where $\ket{\psi}$ is the state vector at some later point in time. Notice how the 
+state vector is a weighted sum of different states, each 
+oscillating at a different frequency proportional to its energy.
+ Now, how do we isolate just one state from this sum? Turns out, the 
+easiest state to isolate from this sum is the ground state, and we can do so by 
+making the substitution $it\to\tau$. After making this substitution, (62) becomes 
+\begin{align}
+    \ket{\psi}=\sum_n\exp(-E_n\tau)\psi_n(0)\ket{E_n}
+\end{align}
+If we work with $\tau\in\mathbb{R}$, then $t$ will be imaginary. Hence this method is called "Imaginary Time".
+Now, the exponential no longer represents oscillation, but exponential damping, 
+with rate proportional to the energy. This means higher energy terms will 
+vanish quicker. When $\tau>>0$, all the higher energy terms will 
+vanish, leaving behind the ground state. 
+\begin{align}
+    \tau>>0\implies\ket{\psi}\approx\exp(-E_0\tau)\psi_0(0)\ket{E_0}
+\end{align}
+With the basic idea down, we can now apply this to our problem. Making the same substitution $it\to\tau$ and 
+$idt\to d\tau$, we can easily transform the real time GPE into imaginary time
+\begin{align}
+    \psi(x,\tau+d\tau)=\exp(-\hat{N}d\tau/2)\mathcal{F}^{-1}(\exp(-d\tau\frac{k^2}{2m})\mathcal{F}[\exp(-\hat{N}d\tau/2)\psi])
+\end{align}
+After running this for large $\tau$, we will arrive at the ground state. A general rule of thumb for 
+harmonic potentials $U=m\omega_0^2x^2/2$ is that the maximum $\tau$ needed for convergence 
+is $\tau\sim1/\omega_0$. After convergence is reached, we add a perturbation 
+(ex. multiply $\psi_0$ by a vortex, or change around some
+ parameters. The ground state with some perturbation added will be 
+our initial condition to run the actual GPE in real time) and propagate in real time 
+using (21) for the real time evolution.
+\end{document}
