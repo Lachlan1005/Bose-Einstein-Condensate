@@ -37,3 +37,13 @@ decay to 0 as they approach the user-defined simulation borders.
 
 ## Notes 
 Notes and technical details on the physics of this project are available in the `BEC Notes` folder. A fully rendered PDF is also in the folder available for viewing.  
+
+## Cautions and Dependencies
+The output paths for the solutions are hardcoded to my computer. Remember to change them to your desired path before use. Also rememebr to install the following dependencies before running the code:
+```
+numpy
+matplotlib
+imageio
+```
+These are crucial fo numerical and visualisation methods. Without these installed, the code will not run. 
+```
