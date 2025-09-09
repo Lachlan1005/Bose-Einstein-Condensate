@@ -7,7 +7,7 @@ i\frac{\partial\psi}{\partial t}=-\frac{1}{2m}\nabla^2\psi+(U+\gamma|\psi|^2)\ps
 $$
 
 Where $$\gamma$$ is a constant describing the nonlinear interaction within the condensate. $$\gamma<0$$ represents attractive behaviour and $$\gamma>0$$ represents repulsive behaviour. 
-Solutions for the 1D and 2D cases are supported. Results are presented in the format of a video output, which shows the condensate density evolve over time, where the condensate density is 
+Solutions for the 1D and 2D cases are supported. Results are presented in the format of a video output, which shows the condensate density evolve over time. The condensate density is 
 indicated either by a 3D graph or a colourmap. 
 
 ## Split Step Method
