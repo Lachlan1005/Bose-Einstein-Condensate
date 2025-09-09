@@ -1,5 +1,5 @@
 # Bose-Einstein Condensate Solver
-This project predicts the evolution of the density for a sample of Bose-Einstein Condensate. The density is taken as $$|\psi|^2$$, where $$\psi$$ is the wavefunction of the
+This project predicts the evolution of the density for a sample of Bose-Einstein Condensate. The density is taken as $$|\psi|^2$$, where $$\psi=\psi(x,y,t)$$ is the wavefunction of the
 system. To achieve this, the program solves the time-dependent Gross-Pitaevskii Equation (TDGPE), given by the following:
 
 $$
@@ -15,7 +15,7 @@ The main solver files `twoD_splitStep.py` and `OneD_splitStep.py` are numerical 
 splits the main equation into its dispersion (kinetic energy) and nonlinear (potential energy and interaction term) parts, treating them separately.
 
 ## Initial Conditions
-There are two main types of initial conditions - Ansatze and perturbed ground states. This section will provide an overview of them.
+There are two main types of initial conditions - Ansatze and perturbed ground states. Both will initialise a wavefunction $$\psi(x,y,0)$$ This section will provide an overview of them.
 
 ### Ansatze 
 The ansatze are stored in the file `ansatz.py`, and can be used directly as an initial wavefunction for the solver. 
