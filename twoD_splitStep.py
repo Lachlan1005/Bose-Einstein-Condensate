@@ -327,7 +327,7 @@ def fullSolver(tmax:float, tauMax:float, ansatzFunc:np.ndarray, L:float,  dt:flo
 fullSolver(6.2, 10, ansatz.wideGaussian, 8, 0.012, 0.012,  0.012, -1, 1/5, 1/5, 3/2, 10, potentialFuncs.harmonicOscillator, perturbations.vortexPerturbation) 
 
 
-
+#Saved runs is now outside of folder. There is a new folder called "Saved Results"
 
 
 
