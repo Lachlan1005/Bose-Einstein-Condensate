@@ -15,7 +15,7 @@ The main files `twoD_splitStep.py` and `OneD_splitStep.py` are numerical solvers
 splits the main equation into its dispersion (kinetic energy) and nonlinear (potential energy and interaction term) parts, treating them separately.
 
 ## Initial Conditions
-There are two main types of initial conditions - Ansatze and perturbed ground states. Both will initialise a wavefunction $$\psi(x,y,0)$$ This section will provide an overview of them.
+There are two main types of initial conditions - Ansatze and perturbed ground states. Both will initialise a wavefunction $$\psi(x,y,0)$$. This section will provide an overview of them.
 
 ### Ansatze 
 The ansatze are stored in the file `ansatz.py`, and can be used directly as an initial wavefunction for the solver. 
