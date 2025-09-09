@@ -32,7 +32,7 @@ The main goal of this project is to study the behaviour of BECs under an optical
 after download. 
 
 ## Boundary Conditions
-Since this project relies on NumPy's Fast Fourier Transform (FFT) algorithm to compute the steps in the dispersion term, periodic boundary conditions are assumed. Please make sure all wavefunctions and potentials 
+Since this project relies on NumPy's Fast Fourier Transform (FFT) algorithm to compute the steps in the dispersion term, periodic boundary conditions are assumed. Please make sure all wavefunctions 
 decay to 0 as they approach the user-defined simulation borders.
 
 ## Notes 
