@@ -11,7 +11,7 @@ Solutions for the 1D and 2D cases are supported. Results are presented in the fo
 indicated either by a 3D graph or a colourmap. 
 
 ## Split Step Method
-The main solver files `twoD_splitStep.py` and `OneD_splitStep.py` are numerical solvers for the 2D and 1D case of GPE respectively. They utilise a method called "Split-Step Strang Splitting", which 
+The main files `twoD_splitStep.py` and `OneD_splitStep.py` are numerical solvers for the 2D and 1D case of GPE respectively. They utilise a method called "Split-Step Strang Splitting", which 
 splits the main equation into its dispersion (kinetic energy) and nonlinear (potential energy and interaction term) parts, treating them separately.
 
 ## Initial Conditions
