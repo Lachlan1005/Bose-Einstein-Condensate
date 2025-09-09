@@ -46,4 +46,3 @@ matplotlib
 imageio
 ```
 These are crucial fo numerical and visualisation methods. Without these installed, the code will not run. 
-```
