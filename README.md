@@ -1,6 +1,6 @@
 # Bose-Einstein Condensate Solver
 This project predicts the evolution of the density for a sample of Bose-Einstein Condensate. The density is taken as $$|\psi|^2$$, where $$\psi=\psi(x,y,t)$$ is the wavefunction of the
-system. To achieve this, the program solves the time-dependent Gross-Pitaevskii Equation (TDGPE) in natural units (\hbar=c=1), given by the following:
+system. To achieve this, the program solves the time-dependent Gross-Pitaevskii Equation (TDGPE) in natural units ($$\hbar=c=1$$), given by the following:
 
 $$
 i\frac{\partial\psi}{\partial t}=-\frac{1}{2m}\nabla^2\psi+(U+\gamma|\psi|^2)\psi
